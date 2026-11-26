@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-	<!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=fr-FR&Locale=fr-FR&Keyboard=0000040c&GeoLocation=84&PEMode=Default&WindowsEditionMode=Firmware&ProcessorArchitecture=amd64&BypassNetworkCheck=true&ComputerNameMode=Custom&ComputerName=MODEL&TimeZoneMode=Explicit&TimeZone=Romance+Standard+Time&UserAccountMode=Unattended&AccountName0=Utilisateur&AccountDisplayName0=&AccountPassword0=&AccountGroup0=Administrators&AutoLogonMode=Own&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&ShowFileExtensions=true&ClassicContextMenu=true&ShowEndTask=true&TaskbarSearch=Icon&TaskbarIconsMode=Empty&DisableWidgets=true&LeftTaskbar=true&HideTaskViewButton=true&DisableBingResults=true&StartTilesMode=Default&StartPinsMode=Empty&DisableFastStartup=true&EnableLongPaths=true&HideEdgeFre=true&DisableEdgeStartupBoost=true&EffectsMode=Default&DeleteEdgeDesktopIcon=true&DesktopIconsMode=Custom&IconDownloads=true&IconRecycleBin=true&IconThisPC=true&StartFoldersMode=Custom&StartFolderDownloads=true&StartFolderPersonalFolder=true&StartFolderSettings=true&CoreIsolationMode=Enabled&WifiMode=Skip&ExpressSettings=DisableAll&LockKeysMode=Skip&StickyKeysMode=Disabled&ColorMode=Default&WallpaperMode=Default&LockScreenMode=Default&RemoveNotepad=true&RemoveXboxApps=true&AppLockerMode=Skip-->
+	<!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=fr-FR&Locale=fr-FR&Keyboard=0000040c&GeoLocation=84&PEMode=Default&WindowsEditionMode=Firmware&ProcessorArchitecture=amd64&BypassNetworkCheck=true&KeepSensitiveFiles=true&ComputerNameMode=Prompt&TimeZoneMode=Explicit&TimeZone=Romance+Standard+Time&UserAccountMode=Unattended&AccountName0=Utilisateur&AccountDisplayName0=&AccountPassword0=&AccountGroup0=Administrators&AutoLogonMode=Own&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&ShowFileExtensions=true&ClassicContextMenu=true&ShowEndTask=true&TaskbarSearch=Icon&TaskbarIconsMode=Empty&DisableWidgets=true&LeftTaskbar=true&HideTaskViewButton=true&DisableBingResults=true&StartTilesMode=Empty&StartPinsMode=Empty&DisableSac=true&DisableSmartScreen=true&DisableFastStartup=true&EnableLongPaths=true&AllowPowerShellScripts=true&DisableLastAccess=true&HideEdgeFre=true&DisableEdgeStartupBoost=true&EffectsMode=Default&DeleteEdgeDesktopIcon=true&DesktopIconsMode=Custom&IconDownloads=true&IconRecycleBin=true&IconThisPC=true&StartFoldersMode=Custom&StartFolderDownloads=true&StartFolderPersonalFolder=true&StartFolderSettings=true&CoreIsolationMode=Enabled&WifiMode=Skip&ExpressSettings=DisableAll&LockKeysMode=Skip&StickyKeysMode=Disabled&ColorMode=Default&WallpaperMode=Default&LockScreenMode=Default&RemoveNotepad=true&RemoveXboxApps=true&AppLockerMode=Skip-->
 	<settings pass="offlineServicing"></settings>
 	<settings pass="windowsPE">
 		<component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
@@ -19,7 +19,7 @@
 	<settings pass="generalize"></settings>
 	<settings pass="specialize">
 		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-			<ComputerName>MODEL</ComputerName>
+			<ComputerName>TEMPNAME</ComputerName>
 			<TimeZone>Romance Standard Time</TimeZone>
 		</component>
 		<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
@@ -96,8 +96,8 @@
 	<Extensions xmlns="https://schneegans.de/windows/unattend-generator/">
 		<Build>
 			<Commit>
-				<Hash>8fdf1b99af95977ea38f4922662964dc6324b0df</Hash>
-				<GitHubUrl>https://github.com/cschneegans/unattend-generator/commit/8fdf1b99af95977ea38f4922662964dc6324b0df</GitHubUrl>
+				<Hash>c112aa81e5d35fe06b5c57f7fa09aeb112a9d456</Hash>
+				<GitHubUrl>https://github.com/cschneegans/unattend-generator/commit/c112aa81e5d35fe06b5c57f7fa09aeb112a9d456</GitHubUrl>
 			</Commit>
 		</Build>
 		<ExtractScript>
@@ -117,6 +117,79 @@ foreach( $file in $Document.unattend.Extensions.File ) {
     [System.IO.File]::WriteAllBytes( $path, $bytes );
 }
 		</ExtractScript>
+		<File path="C:\Windows\Setup\Scripts\GetComputerName.ps1">
+Add-Type -AssemblyName 'Microsoft.VisualBasic';
+function Test-ComputerName {
+	[CmdletBinding()]
+	param(
+		[string]
+		$Value
+	);
+	
+	if( [string]::IsNullOrWhiteSpace( $Value ) ) {
+		return $false;
+	}
+	
+	if( $Value.Length -gt 15 ) {
+		return $false;
+	}
+	
+	if( $Value -match '\s' ) {
+		return $false;
+	}
+	
+	if( $Value -match '^\d+$' ) {
+		return $false;
+	}
+
+	if( $Value.IndexOfAny( '{|}~[\]^'':;&lt;=&gt;?@!"#$%`()+/.,*&amp;'.ToCharArray() ) -gt -1 ) {
+		return $false;
+	}
+	
+	return $true;
+}
+while( $true ) {
+	$title = 'Computer name';
+	$candidate = [Microsoft.VisualBasic.Interaction]::InputBox( 'Enter a valid computer name:', $title, $candidate );
+	if( Test-ComputerName -Value $candidate ) {
+		return $candidate;
+	} else {
+		[Microsoft.VisualBasic.Interaction]::MsgBox( "'${candidate}' is not a valid computer name.", 'Critical, OkOnly', $title ) | Out-Null;
+	}
+}
+		</File>
+		<File path="C:\Windows\Setup\Scripts\SetComputerName.ps1">
+$ErrorActionPreference = 'Stop';
+Set-StrictMode -Version 'Latest';
+&amp; {
+	$newName = ( Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\ComputerName.txt' -Raw ).Trim();
+	if( [string]::IsNullOrWhitespace( $newName ) ) {
+		throw "No computer name was provided.";
+	}
+
+	$keys = @(
+		@{
+			LiteralPath = 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName';
+			Name = 'ComputerName';
+		};
+		@{
+			LiteralPath = 'Registry::HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters';
+			Name = 'Hostname';
+		};
+		@{
+			LiteralPath = 'Registry::HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters';
+			Name = 'NV Hostname';
+		};
+	);
+
+	while( $true ) {
+		foreach( $key in $keys ) {
+			Set-ItemProperty @key -Type 'String' -Value $newName;
+		}
+		Start-Sleep -Milliseconds 50;
+	}
+} *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; 'C:\Windows\Setup\Scripts\SetComputerName.log';
+		</File>
 		<File path="C:\Windows\Setup\Scripts\RemovePackage.ps1">
 $selectors = @(
 	'Microsoft.WindowsNotepad';
@@ -242,8 +315,25 @@ $key = 'Registry::HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start';
 New-Item -Path $key -ItemType 'Directory' -ErrorAction 'SilentlyContinue';
 Set-ItemProperty -LiteralPath $key -Name 'ConfigureStartPins' -Value $json -Type 'String';
 		</File>
+		<File path="C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml">
+&lt;LayoutModificationTemplate Version="1" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"&gt;
+	&lt;LayoutOptions StartTileGroupCellWidth="6" /&gt;
+	&lt;DefaultLayoutOverride&gt;
+		&lt;StartLayoutCollection&gt;
+			&lt;StartLayout GroupCellWidth="6" xmlns="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" /&gt;
+		&lt;/StartLayoutCollection&gt;
+	&lt;/DefaultLayoutOverride&gt;
+&lt;/LayoutModificationTemplate&gt;
+		</File>
 		<File path="C:\Windows\Setup\Scripts\Specialize.ps1">
 $scripts = @(
+	{
+		[string] $newName = &amp; 'C:\Windows\Setup\Scripts\GetComputerName.ps1';
+		$newName &gt; 'C:\Windows\Setup\Scripts\ComputerName.txt';
+		"Will set the computer name to '${newName}'.";
+		Start-Process -FilePath ( Get-Process -Id $PID ).Path -ArgumentList '-ExecutionPolicy "Unrestricted" -NoProfile -File "C:\Windows\Setup\Scripts\SetComputerName.ps1"' -WindowStyle 'Hidden';
+		Start-Sleep -Seconds 10;
+	};
 	{
 		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v BypassNRO /t REG_DWORD /d 1 /f;
 	};
@@ -267,10 +357,27 @@ $scripts = @(
 		Register-ScheduledTask -TaskName 'UnlockStartLayout' -Xml $( Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\UnlockStartLayout.xml' -Raw );
 	};
 	{
+		reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f;
+	};
+	{
+		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v SmartScreenEnabled /t REG_SZ /d "Off" /f;
+		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WTDS\Components" /v ServiceEnabled /t REG_DWORD /d 0 /f;
+		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WTDS\Components" /v NotifyMalicious /t REG_DWORD /d 0 /f;
+		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WTDS\Components" /v NotifyPasswordReuse /t REG_DWORD /d 0 /f;
+		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WTDS\Components" /v NotifyUnsafeApp /t REG_DWORD /d 0 /f;
+		reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Systray" /v HideSystray /t REG_DWORD /d 1 /f;
+	};
+	{
 		reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
 	};
 	{
 		Remove-Item -LiteralPath 'C:\Users\Public\Desktop\Microsoft Edge.lnk' -ErrorAction 'SilentlyContinue' -Verbose;
+	};
+	{
+		Set-ExecutionPolicy -Scope 'LocalMachine' -ExecutionPolicy 'RemoteSigned' -Force;
+	};
+	{
+		fsutil.exe behavior set disableLastAccess 1;
 	};
 	{
 		reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v HiberbootEnabled /t REG_DWORD /d 0 /f;
@@ -398,6 +505,12 @@ $scripts = @(
 		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v ShowTaskViewButton /t REG_DWORD /d 0 /f;
 	};
 	{
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Edge\SmartScreenEnabled" /ve /t REG_DWORD /d 0 /f;
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Edge\SmartScreenPuaEnabled" /ve /t REG_DWORD /d 0 /f;
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\AppHost" /v EnableWebContentEvaluation /t REG_DWORD /d 0 /f;
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\AppHost" /v PreventOverride /t REG_DWORD /d 0 /f;
+	};
+	{
 		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarAl /t REG_DWORD /d 0 /f;
 	};
 	{
@@ -434,13 +547,6 @@ $scripts = @(
 $scripts = @(
 	{
 		Set-ItemProperty -LiteralPath 'Registry::HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name 'AutoLogonCount' -Type 'DWord' -Force -Value 0;
-	};
-	{
-		Remove-Item -LiteralPath @(
-		  'C:\Windows\Panther\unattend.xml';
-		  'C:\Windows\Panther\unattend-original.xml';
-		  'C:\Windows\Setup\Scripts\Wifi.xml';
-		) -Force -ErrorAction 'SilentlyContinue' -Verbose;
 	};
 );
 
