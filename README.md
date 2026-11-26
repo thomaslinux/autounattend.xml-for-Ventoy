@@ -1,11 +1,21 @@
-# 
+# Introduction
 
-# Download the file
-```batch
-mkdir %userprofile%/Downloads/Templates
-cd %userprofile%/Downloads/Templates
-PowerShell -ExecutionPolicy Unrestricted -Command "irm -Uri https://github.com/thomaslinux/unattend.xml/raw/refs/heads/main/unattend.xml -outfile unattend.xml"
-```
+Une organisation de dossier pour un Volume de préparations de postes Windows avec Ventoy
+
+# Prérequis
+
+- [Ventoy](https://www.ventoy.net/en/download.html)
+- Une clé USB / volume externe rapide et vide
+
+# Setup
+
+1. Lancez Ventoy
+1. Branchez le volume
+1. Installez Ventoy sur le volume
+1. Copiez coller tous les fichiers du repo sur le volume
+1. Téléchargez une ISO Windows dans ISO\Windows
+https://www.microsoft.com/fr-ca/software-download/windows11#SoftwareDownload_Edition
+
 
 # Reset with unattend from running PC
 1. Disable bitlocker
@@ -25,5 +35,7 @@ cd Templates
 
 # Credits
 Me
+
+Ventoy
 
 https://schneegans.de/windows/unattend-generator/
