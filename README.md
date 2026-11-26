@@ -10,7 +10,7 @@ PowerShell -ExecutionPolicy Unrestricted -Command "irm -Uri https://github.com/t
 
 # Reset with unattend from running PC
 1. Disable bitlocker
-2. Uninstall Sentinel One (if impossible, goto Reset from oobe)
+2. Uninstall Sentinel One (if impossible, https://github.com/thomaslinux/unattend.xml/edit/main/README.md#reset-from-oobe)
 1. Open Templates folder on your usb key and run ``ADMIN reset.cmd``
 2. Reset should happen with unattend
 
