@@ -1,0 +1,22 @@
+{
+    "control":[
+        { "VTOY_MENU_LANGUAGE": "fr_FR" },
+        { "VTOY_DEFAULT_SEARCH_ROOT": "/ISO" }
+    ],
+    "control_legacy":[
+        { "VTOY_MENU_LANGUAGE": "fr_FR" },
+        { "VTOY_DEFAULT_SEARCH_ROOT": "/ISO" }
+    ],
+    "control_uefi":[
+        { "VTOY_MENU_LANGUAGE": "fr_FR" },
+        { "VTOY_DEFAULT_SEARCH_ROOT": "/ISO" }
+    ],
+    "auto_install":[
+        {
+            "parent": "/ISO/Windows",
+            "template":[
+                "/Templates/autounattend.xml"
+            ]
+        }
+    ]
+}

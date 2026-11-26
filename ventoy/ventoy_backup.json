@@ -1,0 +1,13 @@
+{
+    "control":[
+        { "VTOY_MENU_LANGUAGE": "fr_FR" }
+    ],
+    "auto_install":[
+        {
+            "parent": "/ISO/Windows",
+            "template":[
+                "/Templates/autounattend.xml"
+            ]
+        }
+    ]
+}
