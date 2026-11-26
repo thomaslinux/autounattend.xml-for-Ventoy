@@ -1,5 +1,4 @@
-# unattend.xml
-unattend.xml for use with Ventoy or any reset you want to do
+# 
 
 # Download the file
 ```batch
