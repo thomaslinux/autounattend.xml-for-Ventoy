@@ -1,6 +1,7 @@
 # Introduction
 
-Une organisation de dossier pour un Volume de préparations de postes Windows avec Ventoy
+Une organisation de dossier pour un Volume de préparations de postes Windows avec Ventoy.
+Avec des outils pour exporter les drivers, utiliser un modèle de réponse pour l'installation Windows, et une organisation pour la préparation.
 
 # Prérequis
 
