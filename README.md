@@ -27,7 +27,7 @@ Le reset devrait se dérouler, la seule question sera le nom du poste.
 
 <details><summary>
 
-## Utilisation alternative
+# Utilisation alternative
 </summary>
 
 Si vous ne pouvez pas démarrer sur le poste uniquement
